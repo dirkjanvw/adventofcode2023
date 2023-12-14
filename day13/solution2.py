@@ -37,47 +37,46 @@ def transpose(pattern):
     return list(map(list, zip(*pattern)))
 
 
-def find_first_mirror_line(pattern):
+def find_mirror_line(pattern):
+    total = 0
+
+    hline = find_first_mirror_line(pattern)
+    print(f"\tHorizontal line: {hline}")
+    for position in get_positions(pattern):
+        new_pattern = get_pattern(pattern, position)
+        new_hline = find_first_mirror_line(new_pattern, hline)
+        if new_hline != 0:
+            print(f"\t\tFound new mirror line: {new_hline} at {position}")
+            total += 100*new_hline
+            break
+
+    tpattern = transpose(pattern)
+    vline = find_first_mirror_line(tpattern)
+    print(f"\tVertical line: {vline}")
+    for position in get_positions(tpattern):
+        new_pattern = get_pattern(tpattern, position)
+        new_vline = find_first_mirror_line(new_pattern, vline)
+        if new_vline != 0:
+            print(f"\t\tFound new mirror line: {new_vline} at {position}")
+            total += 1*new_vline
+            break
+
+    return total
+
+
+def find_first_mirror_line(pattern, ignore=0):
     for i in range(1, len(pattern)):
+        if i == ignore:
+            continue
         c = 0
         for r in range(i+1, min(len(pattern), i*2)+1):
+            #print(f"{i-c-1}, {r-1}, {pattern[i-c-1]}, {pattern[r-1]}")
             if pattern[i-c-1] != pattern[r-1]:
                 break
             if i-c-1 == 0 or r == len(pattern):
                 return i
             c += 1
     return 0
-
-
-def find_mirror_line(pattern):
-    total = 0
-
-    total += 100*find_first_mirror_line(pattern)
-    total += find_first_mirror_line(transpose(pattern))
-
-    ## Check if the pattern is symmetric horizontally
-    #for i in range(1, len(pattern)):
-    #    c = 0
-    #    for r in range(i+1, min(len(pattern), i*2)+1):
-    #        if pattern[i-c-1] != pattern[r-1]:
-    #            break
-    #        if i-c-1 == 0 or r == len(pattern):
-    #            total += 100*i
-    #            hlines.append(i)
-    #        c += 1
-
-    ## Check if the pattern is symmetric vertically
-    #tpattern = transpose(pattern)
-    #for i in range(1, len(tpattern)):
-    #    c = 0
-    #    for r in range(i+1, min(len(tpattern), i*2)+1):
-    #        if tpattern[i-c-1] != tpattern[r-1]:
-    #            break
-    #        if i-c-1 == 0 or r == len(tpattern):
-    #            total += i
-    #        c += 1
-
-    return total
 
 
 def get_positions(pattern):
